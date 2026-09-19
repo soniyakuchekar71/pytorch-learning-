@@ -1,0 +1,75 @@
+# PyTorch Lesson 2 — Autograd and Gradients
+
+## What I Learned
+
+In this lesson, I learned about **Autograd** in PyTorch.
+
+Autograd automatically calculates gradients for tensors when `requires_grad=True`.
+
+## Key Concepts
+
+### 1. `requires_grad=True`
+
+```python
+x = torch.tensor(3.0, requires_grad=True)
+```
+
+This tells PyTorch to track operations involving `x`.
+
+### 2. `backward()`
+
+```python
+y.backward()
+```
+
+This calculates the gradient of `y` with respect to `x`.
+
+### 3. `.grad`
+
+```python
+x.grad
+```
+
+This gives the calculated gradient.
+
+## Example
+
+```python
+x = torch.tensor(3.0, requires_grad=True)
+
+y = x ** 2
+
+y.backward()
+
+print(x.grad)
+```
+
+Output:
+
+```text
+tensor(6.)
+```
+
+## What I Need to Remember
+
+* `requires_grad=True` → track gradients
+* `backward()` → calculate gradients
+* `.grad` → access the gradient
+* Gradients are important for **backpropagation**
+* Autograd saves us from calculating derivatives manually
+
+## Lesson Summary
+
+**Forward calculation:**
+
+```text
+x → calculation → y
+```
+
+**Backward calculation:**
+
+```text
+y → backward() → gradient
+```
+
+PyTorch uses these gradients during neural network training to update model parameters.
