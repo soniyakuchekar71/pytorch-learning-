@@ -129,19 +129,137 @@ After completing this lesson, I can:
 
 ---
 
+## Lesson 4 — Neural Networks and `nn.Module`
+
+**File:** `neural_network.py`
+
+### Objectives
+
+* Understand the basic structure of a neural network.
+* Learn how PyTorch represents neural network models.
+* Understand the purpose of `nn.Module`.
+* Learn how to create a simple neural network.
+* Understand layers, inputs, outputs, and forward propagation.
+
+### Topics Covered
+
+* Neural network basics
+* `torch.nn`
+* `nn.Module`
+* `nn.Linear`
+* Model parameters
+* Forward propagation
+* Input and output dimensions
+* `forward()` method
+
+### Basic Neural Network Structure
+
+```text
+Input
+  ↓
+Linear Layer
+  ↓
+Output
+```
+
+A neural network takes input data, processes it through layers, and produces an output.
+
+### Example
+
+```python
+import torch
+import torch.nn as nn
+
+
+class SimpleModel(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+
+        self.layer = nn.Linear(2, 1)
+
+    def forward(self, x):
+        return self.layer(x)
+
+
+model = SimpleModel()
+
+x = torch.tensor([[2.0, 3.0]])
+
+output = model(x)
+
+print(output)
+```
+
+### Key Concepts
+
+#### `nn.Module`
+
+`nn.Module` is the base class used to create neural network models in PyTorch.
+
+```python
+class SimpleModel(nn.Module):
+```
+
+It allows PyTorch to keep track of the model's parameters and layers.
+
+#### `nn.Linear`
+
+```python
+nn.Linear(2, 1)
+```
+
+This creates a fully connected layer with:
+
+* 2 input features
+* 1 output feature
+
+#### `forward()`
+
+The `forward()` method defines how the input moves through the model.
+
+```python
+def forward(self, x):
+    return self.layer(x)
+```
+
+#### Calling the Model
+
+```python
+output = model(x)
+```
+
+PyTorch automatically uses the model's `forward()` method when the model is called.
+
+### Learning Outcomes
+
+After completing this lesson, I can:
+
+* Explain the basic structure of a neural network.
+* Create a neural network using `nn.Module`.
+* Create layers using `nn.Linear`.
+* Define a `forward()` method.
+* Pass input data through a neural network.
+* Understand the relationship between inputs, layers, and outputs.
+
+---
+
 ## Overall Learning Progress
 
-| Lesson | Topic            | Status    |
-| ------ | ---------------- | --------- |
-| 1      | Tensors          | Completed |
-| 2      | Autograd         | Completed |
-| 3      | Gradient Descent | Completed |
+| Lesson | Topic                           | Status    |
+| ------ | ------------------------------- | --------- |
+| 1      | Tensors                         | Completed |
+| 2      | Autograd                        | Completed |
+| 3      | Gradient Descent                | Completed |
+| 4      | Neural Networks and `nn.Module` | Completed |
+
+**Progress: 4 lessons completed**
 
 ---
 
 ## Concepts Learned So Far
 
-The first three lessons cover the basic process behind optimization in machine learning:
+The first four lessons build the foundation for understanding how PyTorch models learn:
 
 ```text
 Tensor
@@ -152,10 +270,12 @@ Gradient
    ↓
 Parameter Update
    ↓
-Repeat
+Neural Network
+   ↓
+Model Output
 ```
 
-So far, I have learned how PyTorch represents data using tensors, calculates gradients using Autograd, and uses those gradients to update parameters through gradient descent.
+So far, I have learned how PyTorch represents data using tensors, calculates gradients using Autograd, updates parameters through gradient descent, and creates basic neural network models using `nn.Module`.
 
 ---
 
@@ -167,7 +287,8 @@ pytorch-learning/
 ├── README.md
 ├── tensors.py
 ├── autograd.py
-└── gradient_descent.py
+├── gradient_descent.py
+└── neural_network.py
 ```
 
 ---
@@ -176,11 +297,11 @@ pytorch-learning/
 
 The upcoming lessons will focus on:
 
-* Neural network fundamentals
-* `nn.Module`
+* Activation functions
 * Loss functions
 * Optimizers
-* Model training
+* Training a neural network
+* Model evaluation
 * Training and validation
 * Building practical neural networks
 
