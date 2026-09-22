@@ -305,6 +305,104 @@ The upcoming lessons will focus on:
 * Training and validation
 * Building practical neural networks
 
+* ---
+
+## Lesson 5 — Activation Functions
+
+**File:** `activation_functions.py`
+
+### Objectives
+
+* Understand why activation functions are used in neural networks.
+* Learn how activation functions introduce non-linearity.
+* Understand commonly used activation functions in PyTorch.
+* Learn how to apply activation functions to tensors.
+* Understand the role of activation functions between neural network layers.
+
+### Topics Covered
+
+* Activation functions
+* Non-linearity
+* ReLU
+* Sigmoid
+* Tanh
+* `nn.ReLU`
+* `nn.Sigmoid`
+* `nn.Tanh`
+
+### Why Activation Functions?
+
+Activation functions allow neural networks to learn complex patterns.
+
+Without activation functions, multiple linear layers would still behave like a linear transformation. Activation functions introduce non-linearity into the network.
+
+### Common Activation Functions
+
+#### ReLU
+
+ReLU stands for Rectified Linear Unit.
+
+```text
+ReLU(x) = max(0, x)
+```
+
+It converts negative values to `0` and keeps positive values unchanged.
+
+#### Sigmoid
+
+Sigmoid converts values into a range between `0` and `1`.
+
+It is commonly used for binary classification outputs.
+
+#### Tanh
+
+Tanh converts values into a range between `-1` and `1`.
+
+### Example
+
+```python
+import torch
+import torch.nn as nn
+
+x = torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
+
+relu = nn.ReLU()
+sigmoid = nn.Sigmoid()
+tanh = nn.Tanh()
+
+print("Input:", x)
+print("ReLU:", relu(x))
+print("Sigmoid:", sigmoid(x))
+print("Tanh:", tanh(x))
+```
+
+### Activation Function Flow
+
+```text
+Input
+  ↓
+Linear Layer
+  ↓
+Activation Function
+  ↓
+Next Layer
+  ↓
+Output
+```
+
+### Learning Outcomes
+
+After completing this lesson, I can:
+
+* Explain why activation functions are needed.
+* Understand the concept of non-linearity.
+* Use ReLU, Sigmoid, and Tanh in PyTorch.
+* Apply activation functions to tensors.
+* Understand where activation functions are used in neural networks.
+
+---
+
+
 ---
 
 ## Goal
