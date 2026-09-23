@@ -2,7 +2,7 @@
 
 This repository contains my notes, practice code, and experiments while learning PyTorch from the basics.
 
-The focus is on understanding the core concepts step by step and applying them through small practical examples.
+The focus is on understanding core concepts step by step and applying them through small practical examples.
 
 ---
 
@@ -25,6 +25,25 @@ The focus is on understanding the core concepts step by step and applying them t
 * Basic tensor operations
 * Arithmetic operations
 * Accessing tensor values
+* Reshaping tensors
+
+### Example
+
+```python
+import torch
+
+x = torch.tensor([10, 20, 30, 40])
+
+print("Tensor:", x)
+print("Shape:", x.shape)
+print("Dimensions:", x.ndim)
+print("Data type:", x.dtype)
+
+x = x.reshape(2, 2)
+
+print("Reshaped tensor:")
+print(x)
+```
 
 ### Learning Outcomes
 
@@ -32,8 +51,10 @@ After completing this lesson, I can:
 
 * Create tensors using PyTorch.
 * Check the shape and data type of a tensor.
-* Perform basic mathematical operations on tensors.
-* Understand the role of tensors in PyTorch.
+* Understand tensor dimensions.
+* Perform basic mathematical operations.
+* Reshape tensors.
+* Access tensor values.
 
 ---
 
@@ -54,8 +75,8 @@ After completing this lesson, I can:
 * `requires_grad=True`
 * `backward()`
 * `grad`
-* Basic gradient calculation
-* Gradients with multiple variables
+* Gradient calculation
+* Computational graphs
 
 ### Example
 
@@ -68,7 +89,9 @@ y = x ** 2
 
 y.backward()
 
-print(x.grad)
+print("x:", x)
+print("y:", y)
+print("Gradient:", x.grad)
 ```
 
 ### Learning Outcomes
@@ -78,6 +101,7 @@ After completing this lesson, I can:
 * Enable gradient tracking for tensors.
 * Calculate gradients using `.backward()`.
 * Access calculated gradients using `.grad`.
+* Understand the basic idea of computational graphs.
 * Understand why gradients are important when training neural networks.
 
 ---
@@ -100,7 +124,7 @@ After completing this lesson, I can:
 * Parameter updates
 * `torch.no_grad()`
 * `zero_()`
-* Using Autograd with gradient descent
+* Autograd with gradient descent
 
 ### Basic Update Rule
 
@@ -111,10 +135,24 @@ new value = old value - learning rate × gradient
 ### Example
 
 ```python
-with torch.no_grad():
-    x -= learning_rate * x.grad
+import torch
 
-x.grad.zero_()
+x = torch.tensor(5.0, requires_grad=True)
+
+learning_rate = 0.1
+
+for step in range(10):
+
+    y = x ** 2
+
+    y.backward()
+
+    with torch.no_grad():
+        x -= learning_rate * x.grad
+
+    x.grad.zero_()
+
+    print("Step:", step + 1, "x:", x.item())
 ```
 
 ### Learning Outcomes
@@ -122,10 +160,11 @@ x.grad.zero_()
 After completing this lesson, I can:
 
 * Explain the basic idea of gradient descent.
-* Understand how a gradient affects a parameter update.
-* Use a learning rate to control parameter updates.
-* Update parameters while avoiding gradient tracking.
-* Clear previously calculated gradients.
+* Understand how gradients affect parameter updates.
+* Understand the purpose of the learning rate.
+* Update parameters using gradients.
+* Use `torch.no_grad()` during parameter updates.
+* Clear gradients using `.zero_()`.
 
 ---
 
@@ -162,8 +201,6 @@ Linear Layer
 Output
 ```
 
-A neural network takes input data, processes it through layers, and produces an output.
-
 ### Example
 
 ```python
@@ -188,7 +225,8 @@ x = torch.tensor([[2.0, 3.0]])
 
 output = model(x)
 
-print(output)
+print("Input:", x)
+print("Output:", output)
 ```
 
 ### Key Concepts
@@ -244,69 +282,6 @@ After completing this lesson, I can:
 
 ---
 
-## Overall Learning Progress
-
-| Lesson | Topic                           | Status    |
-| ------ | ------------------------------- | --------- |
-| 1      | Tensors                         | Completed |
-| 2      | Autograd                        | Completed |
-| 3      | Gradient Descent                | Completed |
-| 4      | Neural Networks and `nn.Module` | Completed |
-
-**Progress: 4 lessons completed**
-
----
-
-## Concepts Learned So Far
-
-The first four lessons build the foundation for understanding how PyTorch models learn:
-
-```text
-Tensor
-   ↓
-Calculation
-   ↓
-Gradient
-   ↓
-Parameter Update
-   ↓
-Neural Network
-   ↓
-Model Output
-```
-
-So far, I have learned how PyTorch represents data using tensors, calculates gradients using Autograd, updates parameters through gradient descent, and creates basic neural network models using `nn.Module`.
-
----
-
-## Repository Structure
-
-```text
-pytorch-learning/
-│
-├── README.md
-├── tensors.py
-├── autograd.py
-├── gradient_descent.py
-└── neural_network.py
-```
-
----
-
-## Next Topics
-
-The upcoming lessons will focus on:
-
-* Activation functions
-* Loss functions
-* Optimizers
-* Training a neural network
-* Model evaluation
-* Training and validation
-* Building practical neural networks
-
-* ---
-
 ## Lesson 5 — Activation Functions
 
 **File:** `activation_functions.py`
@@ -334,11 +309,11 @@ The upcoming lessons will focus on:
 
 Activation functions allow neural networks to learn complex patterns.
 
-Without activation functions, multiple linear layers would still behave like a linear transformation. Activation functions introduce non-linearity into the network.
+Without activation functions, multiple linear layers would still behave like a linear transformation.
 
-### Common Activation Functions
+Activation functions introduce non-linearity into the network.
 
-#### ReLU
+### ReLU
 
 ReLU stands for Rectified Linear Unit.
 
@@ -348,13 +323,13 @@ ReLU(x) = max(0, x)
 
 It converts negative values to `0` and keeps positive values unchanged.
 
-#### Sigmoid
+### Sigmoid
 
 Sigmoid converts values into a range between `0` and `1`.
 
 It is commonly used for binary classification outputs.
 
-#### Tanh
+### Tanh
 
 Tanh converts values into a range between `-1` and `1`.
 
@@ -402,9 +377,205 @@ After completing this lesson, I can:
 
 ---
 
+## Lesson 6 — Loss Functions
+
+**File:** `loss_functions.py`
+
+### Objectives
+
+* Understand what a loss function is.
+* Understand why neural networks need loss functions.
+* Learn how PyTorch calculates prediction error.
+* Learn how to use `nn.MSELoss()`.
+* Understand the relationship between predictions, targets, and loss.
+* Understand why minimizing loss is important during training.
+
+### Topics Covered
+
+* Loss functions
+* Prediction vs actual value
+* Model error
+* Mean Squared Error
+* `nn.MSELoss()`
+* Loss calculation
+* Loss minimization
+
+### What is a Loss Function?
+
+A loss function measures the difference between the model's prediction and the actual target.
+
+```text
+Input
+  ↓
+Neural Network
+  ↓
+Prediction
+  ↓
+Loss Function
+  ↓
+Loss
+```
+
+The training process tries to reduce this loss.
+
+### Mean Squared Error
+
+Mean Squared Error calculates the average squared difference between predictions and actual values.
+
+```text
+MSE = average((prediction - actual)²)
+```
+
+### Example
+
+```python
+import torch
+import torch.nn as nn
+
+
+prediction = torch.tensor([2.5])
+actual = torch.tensor([3.0])
+
+
+mse_loss = nn.MSELoss()
+
+loss = mse_loss(prediction, actual)
+
+
+print("Prediction:", prediction)
+print("Actual:", actual)
+print("MSE Loss:", loss)
+```
+
+### Example Calculation
+
+```text
+Prediction = 2.5
+Actual     = 3.0
+
+Difference = 2.5 - 3.0
+           = -0.5
+
+Squared difference = 0.25
+```
+
+Therefore, the loss for this single value is:
+
+```text
+0.25
+```
+
+### Common PyTorch Loss Functions
+
+| Loss Function           | Common Use                 |
+| ----------------------- | -------------------------- |
+| `nn.MSELoss()`          | Regression                 |
+| `nn.L1Loss()`           | Regression                 |
+| `nn.CrossEntropyLoss()` | Multi-class classification |
+| `nn.BCELoss()`          | Binary classification      |
+
+### Loss and Training
+
+```text
+Prediction
+     ↓
+Loss Function
+     ↓
+Loss
+     ↓
+Gradient
+     ↓
+Parameter Update
+     ↓
+Better Prediction
+```
+
+### Learning Outcomes
+
+After completing this lesson, I can:
+
+* Explain what a loss function does.
+* Explain the difference between prediction and target.
+* Calculate prediction error using MSE.
+* Use `nn.MSELoss()` in PyTorch.
+* Explain why training tries to minimize loss.
+* Understand how loss connects predictions to gradient-based learning.
 
 ---
 
-## Goal
+# Overall Learning Progress
+
+| Lesson | Topic                           | Status    |
+| ------ | ------------------------------- | --------- |
+| 1      | Tensors                         | Completed |
+| 2      | Autograd                        | Completed |
+| 3      | Gradient Descent                | Completed |
+| 4      | Neural Networks and `nn.Module` | Completed |
+| 5      | Activation Functions            | Completed |
+| 6      | Loss Functions                  | Completed |
+
+**Progress: 6/6 lessons completed**
+
+---
+
+# Concepts Learned So Far
+
+The first six lessons build the foundation for understanding how PyTorch models learn.
+
+```text
+Tensor
+   ↓
+Autograd
+   ↓
+Gradient
+   ↓
+Parameter Update
+   ↓
+Neural Network
+   ↓
+Activation Function
+   ↓
+Prediction
+   ↓
+Loss
+```
+
+So far, I have learned how PyTorch represents data using tensors, calculates gradients using Autograd, updates parameters through gradient descent, creates neural networks using `nn.Module`, introduces non-linearity using activation functions, and measures prediction error using loss functions.
+
+---
+
+# Repository Structure
+
+```text
+pytorch-learning/
+│
+├── README.md
+├── tensors.py
+├── autograd.py
+├── gradient_descent.py
+├── neural_network.py
+├── activation_functions.py
+└── loss_functions.py
+```
+
+---
+
+# Next Topics
+
+The upcoming lessons will focus on:
+
+* Optimizers
+* SGD
+* Adam
+* Training a neural network
+* Training loops
+* Model evaluation
+* Training and validation
+* Saving and loading models
+* Building practical deep learning models
+
+---
+
+# Goal
 
 Build a strong foundation in PyTorch and gradually progress from basic tensor operations to implementing and training practical deep learning models.
