@@ -503,6 +503,432 @@ After completing this lesson, I can:
 
 ---
 
+## Lesson 7 — Optimizers
+
+**File:** `optimizers.py`
+
+### Objectives
+
+* Understand what an optimizer is.
+* Understand why optimizers are used when training neural networks.
+* Learn how optimizers update model parameters.
+* Understand the difference between manually updating parameters and using an optimizer.
+* Learn how to use `torch.optim`.
+* Understand `SGD` and the basic idea of `Adam`.
+
+### Topics Covered
+
+* Optimizers
+* `torch.optim`
+* `SGD`
+* `Adam`
+* Learning rate
+* `optimizer.zero_grad()`
+* `optimizer.step()`
+* Parameter updates
+* Optimizer and loss functions
+
+### What is an Optimizer?
+
+An optimizer is responsible for updating the parameters of a neural network using the gradients calculated during backpropagation.
+
+Previously, in Lesson 3, the parameter update was done manually:
+
+```text
+new value = old value - learning rate × gradient
+```
+
+An optimizer performs this parameter update automatically.
+
+### Training Process
+
+A basic training process looks like:
+
+```text
+Input
+  ↓
+Neural Network
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+backward()
+  ↓
+Gradients
+  ↓
+Optimizer
+  ↓
+Parameter Update
+```
+
+### Why Do We Need Optimizers?
+
+Without an optimizer, we would need to manually update every parameter:
+
+```python
+with torch.no_grad():
+    parameter -= learning_rate * parameter.grad
+```
+
+For a real neural network containing thousands or millions of parameters, doing this manually would be difficult.
+
+Optimizers handle these updates for us.
+
+---
+
+### SGD
+
+SGD stands for **Stochastic Gradient Descent**.
+
+It is one of the simplest optimization algorithms.
+
+In PyTorch:
+
+```python
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+```
+
+Here:
+
+* `model.parameters()` gives the parameters that need to be updated.
+* `lr` means learning rate.
+* `0.01` is the learning rate.
+
+### Adam
+
+Adam is another commonly used optimizer.
+
+In PyTorch:
+
+```python
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+```
+
+Adam automatically adjusts how parameters are updated based on gradient information.
+
+---
+
+## `optimizer.zero_grad()`
+
+Gradients can accumulate in PyTorch.
+
+Before calculating gradients for the next training step, we normally clear the old gradients:
+
+```python
+optimizer.zero_grad()
+```
+
+### Why?
+
+The training cycle is:
+
+```text
+Clear old gradients
+       ↓
+Forward pass
+       ↓
+Calculate loss
+       ↓
+Backward pass
+       ↓
+Update parameters
+```
+
+---
+
+## `optimizer.step()`
+
+After calculating gradients using:
+
+```python
+loss.backward()
+```
+
+we use:
+
+```python
+optimizer.step()
+```
+
+to update the model parameters.
+
+So:
+
+```python
+loss.backward()
+```
+
+calculates the gradients.
+
+```python
+optimizer.step()
+```
+
+uses those gradients to update the parameters.
+
+---
+
+## Example
+
+```python
+import torch
+import torch.nn as nn
+
+
+class SimpleModel(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+
+        self.layer = nn.Linear(1, 1)
+
+    def forward(self, x):
+        return self.layer(x)
+
+
+model = SimpleModel()
+
+loss_function = nn.MSELoss()
+
+optimizer = torch.optim.SGD(
+    model.parameters(),
+    lr=0.01
+)
+
+
+x = torch.tensor([[2.0]])
+target = torch.tensor([[4.0]])
+
+
+for step in range(10):
+
+    optimizer.zero_grad()
+
+    prediction = model(x)
+
+    loss = loss_function(prediction, target)
+
+    loss.backward()
+
+    optimizer.step()
+
+    print(
+        "Step:",
+        step + 1,
+        "Prediction:",
+        prediction.item(),
+        "Loss:",
+        loss.item()
+    )
+```
+
+### What Happens in This Example?
+
+#### Step 1 — Create the model
+
+```python
+model = SimpleModel()
+```
+
+The model contains a linear layer.
+
+---
+
+#### Step 2 — Create the loss function
+
+```python
+loss_function = nn.MSELoss()
+```
+
+This measures the difference between the prediction and target.
+
+---
+
+#### Step 3 — Create the optimizer
+
+```python
+optimizer = torch.optim.SGD(
+    model.parameters(),
+    lr=0.01
+)
+```
+
+The optimizer will update the model's parameters.
+
+---
+
+#### Step 4 — Clear previous gradients
+
+```python
+optimizer.zero_grad()
+```
+
+This removes gradients from the previous training step.
+
+---
+
+#### Step 5 — Forward pass
+
+```python
+prediction = model(x)
+```
+
+The input goes through the neural network.
+
+---
+
+#### Step 6 — Calculate loss
+
+```python
+loss = loss_function(prediction, target)
+```
+
+This tells us how far the prediction is from the target.
+
+---
+
+#### Step 7 — Calculate gradients
+
+```python
+loss.backward()
+```
+
+PyTorch calculates how each model parameter contributed to the loss.
+
+---
+
+#### Step 8 — Update parameters
+
+```python
+optimizer.step()
+```
+
+The optimizer uses the gradients to update the model parameters.
+
+---
+
+## Complete Training Cycle
+
+The most important pattern to remember is:
+
+```python
+optimizer.zero_grad()
+
+prediction = model(x)
+
+loss = loss_function(prediction, target)
+
+loss.backward()
+
+optimizer.step()
+```
+
+This pattern will appear repeatedly when training PyTorch models.
+
+### Important Difference
+
+Previously:
+
+```python
+x -= learning_rate * x.grad
+```
+
+We manually updated the parameter.
+
+Now:
+
+```python
+optimizer.step()
+```
+
+The optimizer performs the update.
+
+---
+
+## SGD vs Adam
+
+| Optimizer | Description                                       |
+| --------- | ------------------------------------------------- |
+| `SGD`     | Simple gradient-based optimizer                   |
+| `Adam`    | Adaptive optimizer that adjusts parameter updates |
+
+Example:
+
+```python
+torch.optim.SGD(model.parameters(), lr=0.01)
+```
+
+```python
+torch.optim.Adam(model.parameters(), lr=0.001)
+```
+
+For now, the important thing is understanding **how an optimizer fits into the training process** rather than memorizing every optimizer.
+
+---
+
+## Learning Rate
+
+The learning rate controls how large the parameter updates are.
+
+```python
+lr=0.01
+```
+
+A very large learning rate can cause training to move too aggressively.
+
+A very small learning rate can make training very slow.
+
+```text
+Learning Rate
+      ↓
+Size of Parameter Update
+      ↓
+Training Behavior
+```
+
+---
+
+## Key Concepts to Remember
+
+### `optimizer.zero_grad()`
+
+Clears previous gradients.
+
+### `loss.backward()`
+
+Calculates gradients.
+
+### `optimizer.step()`
+
+Updates model parameters.
+
+### `lr`
+
+Controls the learning rate.
+
+### `model.parameters()`
+
+Provides the parameters that the optimizer should update.
+
+---
+
+## Learning Outcomes
+
+After completing this lesson, I can:
+
+* Explain what an optimizer does.
+* Understand why optimizers are needed for neural network training.
+* Create an optimizer using `torch.optim`.
+* Use SGD in PyTorch.
+* Understand the basic idea of Adam.
+* Use `optimizer.zero_grad()`.
+* Use `optimizer.step()`.
+* Understand how loss, gradients, and optimizers work together.
+* Explain the basic PyTorch training cycle.
+
+---
+
 # Overall Learning Progress
 
 | Lesson | Topic                           | Status    |
@@ -513,14 +939,15 @@ After completing this lesson, I can:
 | 4      | Neural Networks and `nn.Module` | Completed |
 | 5      | Activation Functions            | Completed |
 | 6      | Loss Functions                  | Completed |
+| 7      | Optimizers                      | Completed |
 
-**Progress: 6/6 lessons completed**
+**Progress: 7/7 lessons completed**
 
 ---
 
 # Concepts Learned So Far
 
-The first six lessons build the foundation for understanding how PyTorch models learn.
+The first seven lessons build the foundation for understanding how PyTorch models learn.
 
 ```text
 Tensor
@@ -538,9 +965,13 @@ Activation Function
 Prediction
    ↓
 Loss
+   ↓
+Optimizer
+   ↓
+Parameter Update
 ```
 
-So far, I have learned how PyTorch represents data using tensors, calculates gradients using Autograd, updates parameters through gradient descent, creates neural networks using `nn.Module`, introduces non-linearity using activation functions, and measures prediction error using loss functions.
+So far, I have learned how PyTorch represents data using tensors, calculates gradients using Autograd, updates parameters through gradient descent, creates neural networks using `nn.Module`, introduces non-linearity using activation functions, measures prediction error using loss functions, and uses optimizers to automatically update model parameters.
 
 ---
 
@@ -555,7 +986,8 @@ pytorch-learning/
 ├── gradient_descent.py
 ├── neural_network.py
 ├── activation_functions.py
-└── loss_functions.py
+├── loss_functions.py
+└── optimizers.py
 ```
 
 ---
@@ -564,11 +996,11 @@ pytorch-learning/
 
 The upcoming lessons will focus on:
 
-* Optimizers
-* SGD
-* Adam
-* Training a neural network
 * Training loops
+* Training a complete neural network
+* Dataset and DataLoader
+* Batches
+* Epochs
 * Model evaluation
 * Training and validation
 * Saving and loading models
