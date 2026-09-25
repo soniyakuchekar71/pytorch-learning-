@@ -919,348 +919,6 @@ Understand how loss, gradients, and optimizers work together.
 
 Explain the basic PyTorch training cycle.
 
-Lesson 8 — Training Loops
-
-File: training_loop.py
-
-Objectives
-
-Understand what a training loop is.
-
-Learn how to train a neural network for multiple epochs.
-
-Understand the relationship between forward pass, loss, backward pass, and optimizer.
-
-Learn how to track loss during training.
-
-Understand the difference between a training step and an epoch.
-
-Topics Covered
-
-Training loops
-
-Epochs
-
-Forward pass
-
-Loss calculation
-
-Backward pass
-
-Optimizer updates
-
-Tracking training loss
-
-optimizer.zero_grad()
-
-loss.backward()
-
-optimizer.step()
-
-What is a Training Loop?
-
-A training loop is the repeated process used to train a neural network.
-
-The basic pattern is:
-
-Input
-  ↓
-Model
-  ↓
-Prediction
-  ↓
-Loss
-  ↓
-Backward Pass
-  ↓
-Gradients
-  ↓
-Optimizer
-  ↓
-Parameter Update
-  ↓
-Repeat
-
-A neural network usually needs many training steps to learn useful patterns.
-
-What is an Epoch?
-
-An epoch means one complete pass through the training data.
-
-For example, if a model is trained for:
-
-epochs = 10
-
-the model goes through the training data 10 times.
-
-Training Data
-     ↓
-Epoch 1
-     ↓
-Epoch 2
-     ↓
-Epoch 3
-     ↓
-...
-     ↓
-Epoch 10
-
-Training Step vs Epoch
-
-A training step updates the model parameters once using a batch of data.
-
-An epoch contains all the training steps needed to process the complete training dataset once.
-
-Epoch
- ├── Step 1
- ├── Step 2
- ├── Step 3
- └── Step 4
-
-Example
-
-import torch
-import torch.nn as nn
-
-
-class SimpleModel(nn.Module):
-
-    def __init__(self):
-        super().__init__()
-
-        self.layer = nn.Linear(1, 1)
-
-    def forward(self, x):
-        return self.layer(x)
-
-
-model = SimpleModel()
-
-loss_function = nn.MSELoss()
-
-optimizer = torch.optim.SGD(
-    model.parameters(),
-    lr=0.01
-)
-
-
-x = torch.tensor([[1.0], [2.0], [3.0], [4.0]])
-target = torch.tensor([[2.0], [4.0], [6.0], [8.0]])
-
-
-epochs = 100
-
-for epoch in range(epochs):
-
-    optimizer.zero_grad()
-
-    prediction = model(x)
-
-    loss = loss_function(prediction, target)
-
-    loss.backward()
-
-    optimizer.step()
-
-    if (epoch + 1) % 10 == 0:
-        print(
-            "Epoch:",
-            epoch + 1,
-            "Loss:",
-            loss.item()
-        )
-
-What Happens in This Example?
-
-Step 1 — Create the model
-
-model = SimpleModel()
-
-The model contains one linear layer.
-
-Step 2 — Define the loss function
-
-loss_function = nn.MSELoss()
-
-MSE measures the difference between the model's prediction and the target.
-
-Step 3 — Create the optimizer
-
-optimizer = torch.optim.SGD(
-    model.parameters(),
-    lr=0.01
-)
-
-The optimizer updates the model parameters.
-
-Step 4 — Define the training data
-
-x = torch.tensor([[1.0], [2.0], [3.0], [4.0]])
-target = torch.tensor([[2.0], [4.0], [6.0], [8.0]])
-
-The model is learning the relationship:
-
-target = 2 × input
-
-Step 5 — Set the number of epochs
-
-epochs = 100
-
-The model will process the training data 100 times.
-
-Step 6 — Start the training loop
-
-for epoch in range(epochs):
-
-This repeats the training process for every epoch.
-
-Step 7 — Clear gradients
-
-optimizer.zero_grad()
-
-This clears gradients from the previous training step.
-
-Step 8 — Forward pass
-
-prediction = model(x)
-
-The input data passes through the model and produces predictions.
-
-Step 9 — Calculate loss
-
-loss = loss_function(prediction, target)
-
-The loss tells us how different the predictions are from the targets.
-
-Step 10 — Backward pass
-
-loss.backward()
-
-PyTorch calculates gradients for the model parameters.
-
-Step 11 — Update parameters
-
-optimizer.step()
-
-The optimizer uses the gradients to update the model parameters.
-
-Complete Training Pattern
-
-The most important pattern to remember is:
-
-for epoch in range(epochs):
-
-    optimizer.zero_grad()
-
-    prediction = model(x)
-
-    loss = loss_function(prediction, target)
-
-    loss.backward()
-
-    optimizer.step()
-
-This is one of the most important patterns in PyTorch.
-
-Tracking Loss
-
-During training, we usually monitor the loss.
-
-print("Loss:", loss.item())
-
-loss.item() converts the loss tensor containing a single value into a regular Python number.
-
-We can also print the loss every few epochs:
-
-if (epoch + 1) % 10 == 0:
-    print("Epoch:", epoch + 1, "Loss:", loss.item())
-
-If training is working correctly, the loss will generally decrease over time, although the exact behavior depends on the model, data, optimizer, and learning rate.
-
-Training Flow
-
-Training Data
-      ↓
-   Model
-      ↓
- Prediction
-      ↓
- Loss Function
-      ↓
-     Loss
-      ↓
- backward()
-      ↓
-  Gradients
-      ↓
-optimizer.step()
-      ↓
-Updated Parameters
-      ↓
-     Repeat
-
-Key Concepts to Remember
-
-Training Loop
-
-Repeats the model training process.
-
-Epoch
-
-One complete pass through the training data.
-
-optimizer.zero_grad()
-
-Clears old gradients.
-
-Forward Pass
-
-prediction = model(x)
-
-Produces predictions from the input.
-
-Loss
-
-loss = loss_function(prediction, target)
-
-Measures prediction error.
-
-Backward Pass
-
-loss.backward()
-
-Calculates gradients.
-
-Parameter Update
-
-optimizer.step()
-
-Updates the model parameters.
-
-Learning Outcomes
-
-After completing this lesson, I can:
-
-Explain what a training loop is.
-
-Explain what an epoch means.
-
-Understand the difference between a training step and an epoch.
-
-Create a basic PyTorch training loop.
-
-Perform a forward pass.
-
-Calculate loss.
-
-Calculate gradients using backward().
-
-Update model parameters using an optimizer.
-
-Track training loss.
-
-Explain the complete basic training process.
-
 Overall Learning Progress
 
 Lesson
@@ -1311,17 +969,11 @@ Optimizers
 
 Completed
 
-8
-
-Training Loops
-
-Completed
-
-Progress: 8/8 lessons completed
+Progress: 7/7 lessons completed
 
 Concepts Learned So Far
 
-The first eight lessons build the foundation for training PyTorch models.
+The first seven lessons build the foundation for understanding how PyTorch models learn.
 
 Tensor
    ↓
@@ -1341,11 +993,9 @@ Loss
    ↓
 Optimizer
    ↓
-Training Loop
-   ↓
-Repeated Parameter Updates
+Parameter Update
 
-So far, I have learned how PyTorch represents data using tensors, calculates gradients using Autograd, updates parameters through gradient descent, creates neural networks using nn.Module, introduces non-linearity using activation functions, measures prediction error using loss functions, uses optimizers to update model parameters, and combines these concepts into a complete training loop.
+So far, I have learned how PyTorch represents data using tensors, calculates gradients using Autograd, updates parameters through gradient descent, creates neural networks using nn.Module, introduces non-linearity using activation functions, measures prediction error using loss functions, and uses optimizers to automatically update model parameters.
 
 Repository Structure
 
@@ -1358,18 +1008,21 @@ pytorch-learning/
 ├── neural_network.py
 ├── activation_functions.py
 ├── loss_functions.py
-├── optimizers.py
-└── training_loop.py
+└── optimizers.py
 
 Next Topics
 
 The upcoming lessons will focus on:
 
+Training loops
+
+Training a complete neural network
+
 Dataset and DataLoader
 
 Batches
 
-Training with datasets
+Epochs
 
 Model evaluation
 
@@ -1378,3 +1031,7 @@ Training and validation
 Saving and loading models
 
 Building practical deep learning models
+
+Goal
+
+Build a strong foundation in PyTorch and gradually progress from basic tensor operations to implementing and training practical deep learning models.
