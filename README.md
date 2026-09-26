@@ -275,7 +275,97 @@ Using batches is important because models usually train on groups of samples ins
 
 ---
 
+## Lesson 9 — Building Neural Networks with `nn.Module`
+
+**File:** `model.py`
+
+### Objectives
+
+* Understand how to build a custom neural network.
+* Learn how `nn.Module` is used to create models.
+* Create multiple neural network layers.
+* Understand the `forward()` method.
+* Understand how data flows through different layers.
+* Access model parameters.
+
+### Key Concepts
+
+* `nn.Module`
+* `nn.Linear`
+* `forward()`
+* Model architecture
+* Layers
+* Weights and biases
+* Model parameters
+
+### Example
+
+```python
+import torch
+from torch import nn
+
+
+class SimpleNeuralNetwork(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+
+        self.layer1 = nn.Linear(2, 8)
+        self.layer2 = nn.Linear(8, 4)
+        self.output = nn.Linear(4, 1)
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = torch.relu(x)
+
+        x = self.layer2(x)
+        x = torch.relu(x)
+
+        x = self.output(x)
+
+        return x
+
+
+model = SimpleNeuralNetwork()
+
+x = torch.tensor([[1.0, 2.0]])
+
+prediction = model(x)
+
+print(model)
+print("Input:", x)
+print("Prediction:", prediction)
+```
+
+### Model Architecture
+
+```text
+Input: 2 features
+       ↓
+Linear(2 → 8)
+       ↓
+ReLU
+       ↓
+Linear(8 → 4)
+       ↓
+ReLU
+       ↓
+Linear(4 → 1)
+       ↓
+Output
+```
+
+### What I Learned
+
+`nn.Module` is the base class used to create neural network models in PyTorch. Layers such as `nn.Linear` can be defined inside the model, while the `forward()` method defines how input data moves through the network.
+
+PyTorch automatically tracks the weights and biases of the layers as model parameters, which can later be updated by an optimizer during training.
+
+---
+
 ## Learning Progress
+
+**9/15 Lessons Completed — 6 Lessons Remaining**
 
 * [x] Lesson 1 — Tensors
 * [x] Lesson 2 — Autograd
@@ -285,6 +375,13 @@ Using batches is important because models usually train on groups of samples ins
 * [x] Lesson 6 — Training a Neural Network
 * [x] Lesson 7 — Optimizers
 * [x] Lesson 8 — Dataset and DataLoader
+* [x] Lesson 9 — Building Neural Networks with `nn.Module`
+* [ ] Lesson 10 — Classification with PyTorch
+* [ ] Lesson 11 — CNNs and Image Data
+* [ ] Lesson 12 — CNN Training and Evaluation
+* [ ] Lesson 13 — Transfer Learning
+* [ ] Lesson 14 — Model Saving, Loading and Deployment Basics
+* [ ] Lesson 15 — PyTorch Image Classification Project
 
 ---
 
