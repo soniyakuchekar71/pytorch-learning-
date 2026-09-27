@@ -363,9 +363,168 @@ PyTorch automatically tracks the weights and biases of the layers as model param
 
 ---
 
+## Lesson 10 — Classification with PyTorch
+
+**File:** `classification.py`
+
+### Objectives
+
+* Understand what classification means in machine learning.
+* Learn the difference between binary classification and regression.
+* Build a neural network for binary classification.
+* Understand class labels.
+* Learn how `BCEWithLogitsLoss()` is used for binary classification.
+* Convert model outputs into probabilities.
+* Convert probabilities into predicted classes.
+
+### Classification
+
+Classification is a machine learning task where a model predicts a category or class.
+
+For example:
+
+```text
+Input Features
+      ↓
+Neural Network
+      ↓
+Prediction
+      ↓
+Class
+```
+
+In binary classification, there are two possible classes:
+
+```text
+0 → Class 0
+1 → Class 1
+```
+
+For example, a model could classify an input as:
+
+```text
+0 → Not detected
+1 → Detected
+```
+
+### Key Concepts
+
+* Binary classification
+* Class labels
+* Logits
+* Probability
+* Threshold
+* `torch.sigmoid()`
+* `nn.BCEWithLogitsLoss()`
+
+### Important Concept — Logits
+
+The final layer of the model produces a raw value called a **logit**.
+
+The logit is not directly a probability.
+
+We can convert the logit into a probability using the sigmoid function:
+
+```python
+probability = torch.sigmoid(logit)
+```
+
+The output is between `0` and `1`.
+
+For example:
+
+```text
+Logit → Probability
+
+  2.0 → 0.88
+  0.0 → 0.50
+ -2.0 → 0.12
+```
+
+A common threshold for binary classification is `0.5`:
+
+```python
+predicted_class = (probability >= 0.5).float()
+```
+
+This means:
+
+```text
+Probability >= 0.5 → Class 1
+Probability < 0.5  → Class 0
+```
+
+### Loss Function
+
+For binary classification, this lesson uses:
+
+```python
+loss_function = nn.BCEWithLogitsLoss()
+```
+
+`BCEWithLogitsLoss()` combines the sigmoid operation and binary cross-entropy loss in a numerically stable way.
+
+Because of this, the model should return the raw logits during training rather than applying `torch.sigmoid()` inside the model.
+
+### Model Architecture
+
+```text
+Input: 2 features
+       ↓
+Linear(2 → 8)
+       ↓
+ReLU
+       ↓
+Linear(8 → 4)
+       ↓
+ReLU
+       ↓
+Linear(4 → 1)
+       ↓
+Logit
+       ↓
+Sigmoid
+       ↓
+Probability
+       ↓
+Threshold 0.5
+       ↓
+Class 0 or 1
+```
+
+### Training Process
+
+```text
+Input Data
+    ↓
+Model
+    ↓
+Logits
+    ↓
+BCEWithLogitsLoss
+    ↓
+Backward Pass
+    ↓
+Gradients
+    ↓
+Adam Optimizer
+    ↓
+Updated Parameters
+```
+
+### What I Learned
+
+Classification is used when the output represents a category instead of a continuous value.
+
+In binary classification, the model produces one logit. `BCEWithLogitsLoss()` compares this logit with the target class and calculates the loss.
+
+After training, `torch.sigmoid()` can be used to convert logits into probabilities, and a threshold such as `0.5` can be used to obtain the final class prediction.
+
+---
+
 ## Learning Progress
 
-**9/15 Lessons Completed — 6 Lessons Remaining**
+**10/15 Lessons Completed — 5 Lessons Remaining**
 
 * [x] Lesson 1 — Tensors
 * [x] Lesson 2 — Autograd
@@ -376,7 +535,7 @@ PyTorch automatically tracks the weights and biases of the layers as model param
 * [x] Lesson 7 — Optimizers
 * [x] Lesson 8 — Dataset and DataLoader
 * [x] Lesson 9 — Building Neural Networks with `nn.Module`
-* [ ] Lesson 10 — Classification with PyTorch
+* [x] Lesson 10 — Classification with PyTorch
 * [ ] Lesson 11 — CNNs and Image Data
 * [ ] Lesson 12 — CNN Training and Evaluation
 * [ ] Lesson 13 — Transfer Learning
