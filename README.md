@@ -522,9 +522,361 @@ After training, `torch.sigmoid()` can be used to convert logits into probabiliti
 
 ---
 
+## Lesson 11 — CNNs and Image Data
+
+**File:** `cnn.py`
+
+### Objectives
+
+* Understand what Convolutional Neural Networks (CNNs) are.
+* Learn why CNNs are useful for image data.
+* Understand convolutional layers.
+* Learn about pooling layers.
+* Understand feature maps.
+* Build a simple CNN using PyTorch.
+* Understand the basic flow of image data through a CNN.
+
+### Why CNNs?
+
+Traditional fully connected neural networks can process image data, but they become inefficient as image size increases.
+
+CNNs are designed to work with images by learning spatial patterns such as:
+
+```text
+Edges
+  ↓
+Shapes
+  ↓
+Textures
+  ↓
+More complex features
+  ↓
+Object / Class
+```
+
+CNNs are commonly used for tasks such as:
+
+* Image classification
+* Object detection
+* Medical image analysis
+* Face recognition
+* Image segmentation
+
+### Image Representation
+
+Images are represented as tensors.
+
+A color image usually has three channels:
+
+```text
+RGB
+
+Red
+Green
+Blue
+```
+
+A single image can have the shape:
+
+```text
+[Channels, Height, Width]
+```
+
+For example:
+
+```text
+[3, 64, 64]
+```
+
+When multiple images are processed together in a batch:
+
+```text
+[Batch Size, Channels, Height, Width]
+```
+
+For example:
+
+```text
+[32, 3, 64, 64]
+```
+
+This means:
+
+```text
+32    → number of images
+3     → RGB channels
+64    → image height
+64    → image width
+```
+
+### Convolution
+
+A convolutional layer uses small filters, also called kernels, to scan across an image.
+
+The filters learn useful patterns from the input image.
+
+For example:
+
+```text
+Input Image
+     ↓
+Convolution
+     ↓
+Feature Maps
+```
+
+Early layers may learn simple features such as:
+
+```text
+Edges
+Lines
+Corners
+```
+
+Deeper layers can learn more complex patterns.
+
+### Key Concepts
+
+* CNN
+* Convolution
+* Kernel
+* Feature map
+* Channels
+* `nn.Conv2d`
+* Pooling
+* `nn.MaxPool2d`
+* Flattening
+* `nn.Flatten()`
+
+### Important PyTorch Layers
+
+A convolutional layer can be created using:
+
+```python
+nn.Conv2d(
+    in_channels=3,
+    out_channels=16,
+    kernel_size=3
+)
+```
+
+Here:
+
+```text
+in_channels = 3
+```
+
+means the input image has three channels.
+
+```text
+out_channels = 16
+```
+
+means the layer learns 16 filters and produces 16 feature maps.
+
+```text
+kernel_size = 3
+```
+
+means the convolution uses a 3 × 3 kernel.
+
+### Pooling
+
+Pooling reduces the spatial size of feature maps.
+
+A commonly used pooling layer is:
+
+```python
+nn.MaxPool2d(kernel_size=2)
+```
+
+It reduces the height and width of the feature map while keeping important information.
+
+For example:
+
+```text
+Before:
+
+32 × 32
+
+      ↓ MaxPool2d(2)
+
+After:
+
+16 × 16
+```
+
+### Simple CNN Architecture
+
+```text
+Input Image
+[3 × 64 × 64]
+      ↓
+Conv2d
+      ↓
+ReLU
+      ↓
+MaxPool
+      ↓
+Conv2d
+      ↓
+ReLU
+      ↓
+MaxPool
+      ↓
+Flatten
+      ↓
+Linear
+      ↓
+Output
+```
+
+### Example
+
+```python
+import torch
+from torch import nn
+
+
+class SimpleCNN(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 16, kernel_size=3),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+
+            nn.Conv2d(16, 32, kernel_size=3),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(32 * 14 * 14, 2)
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+
+        return x
+
+
+model = SimpleCNN()
+
+x = torch.randn(1, 3, 64, 64)
+
+output = model(x)
+
+print(model)
+print("Input shape:", x.shape)
+print("Output shape:", output.shape)
+```
+
+### Understanding the Shape Changes
+
+The input is:
+
+```text
+[1, 3, 64, 64]
+```
+
+The first convolution changes the channels:
+
+```text
+[1, 16, 62, 62]
+```
+
+After max pooling:
+
+```text
+[1, 16, 31, 31]
+```
+
+The second convolution produces:
+
+```text
+[1, 32, 29, 29]
+```
+
+After the second max pooling:
+
+```text
+[1, 32, 14, 14]
+```
+
+The tensor is then flattened:
+
+```text
+32 × 14 × 14
+```
+
+which becomes:
+
+```text
+6272
+```
+
+The final linear layer produces:
+
+```text
+2 outputs
+```
+
+representing two possible classes.
+
+### CNN Training Flow
+
+```text
+Image
+  ↓
+Convolution
+  ↓
+ReLU
+  ↓
+Pooling
+  ↓
+Convolution
+  ↓
+ReLU
+  ↓
+Pooling
+  ↓
+Flatten
+  ↓
+Linear Layer
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Backward Pass
+  ↓
+Optimizer
+```
+
+### What I Learned
+
+CNNs are neural networks designed to process data with spatial structure, especially images.
+
+Convolutional layers learn visual features from images, while pooling layers reduce the spatial dimensions of feature maps.
+
+I also learned that image tensors in PyTorch usually follow the format:
+
+```text
+[Batch Size, Channels, Height, Width]
+```
+
+Understanding tensor shapes is important when building CNN architectures because each layer expects a specific input shape.
+
+---
+
 ## Learning Progress
 
-**10/15 Lessons Completed — 5 Lessons Remaining**
+**11/15 Lessons Completed — 4 Lessons Remaining**
 
 * [x] Lesson 1 — Tensors
 * [x] Lesson 2 — Autograd
@@ -536,7 +888,7 @@ After training, `torch.sigmoid()` can be used to convert logits into probabiliti
 * [x] Lesson 8 — Dataset and DataLoader
 * [x] Lesson 9 — Building Neural Networks with `nn.Module`
 * [x] Lesson 10 — Classification with PyTorch
-* [ ] Lesson 11 — CNNs and Image Data
+* [x] Lesson 11 — CNNs and Image Data
 * [ ] Lesson 12 — CNN Training and Evaluation
 * [ ] Lesson 13 — Transfer Learning
 * [ ] Lesson 14 — Model Saving, Loading and Deployment Basics
