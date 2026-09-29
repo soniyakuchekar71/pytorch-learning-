@@ -874,37 +874,339 @@ Understanding tensor shapes is important when building CNN architectures because
 
 ---
 
-## Learning Progress
+Lesson 12 — CNN Training and Evaluation
 
-**11/15 Lessons Completed — 4 Lessons Remaining**
+File: cnn_training.py
 
-* [x] Lesson 1 — Tensors
-* [x] Lesson 2 — Autograd
-* [x] Lesson 3 — Neural Network Basics
-* [x] Lesson 4 — Activation Functions
-* [x] Lesson 5 — Loss Functions
-* [x] Lesson 6 — Training a Neural Network
-* [x] Lesson 7 — Optimizers
-* [x] Lesson 8 — Dataset and DataLoader
-* [x] Lesson 9 — Building Neural Networks with `nn.Module`
-* [x] Lesson 10 — Classification with PyTorch
-* [x] Lesson 11 — CNNs and Image Data
-* [ ] Lesson 12 — CNN Training and Evaluation
-* [ ] Lesson 13 — Transfer Learning
-* [ ] Lesson 14 — Model Saving, Loading and Deployment Basics
-* [ ] Lesson 15 — PyTorch Image Classification Project
+Objectives
+Learn how to train a CNN using image data.
+Understand the complete CNN training loop.
+Use CrossEntropyLoss() for multi-class classification.
+Train a model using an optimizer.
+Understand training loss and accuracy.
+Learn the difference between training and evaluation mode.
+Use model.train() and model.eval().
+Evaluate a trained CNN without calculating gradients.
+Understand how to calculate classification accuracy.
+Key Concepts
+CNN training
+Training loop
+CrossEntropyLoss()
+model.train()
+model.eval()
+torch.no_grad()
+Accuracy
+Batch training
+Forward pass
+Backward pass
+Optimizer
+Evaluation
+Training vs Evaluation
 
----
+During training, the model learns by updating its parameters:
 
-## Tools and Technologies
+Training Data
+     ↓
+CNN
+     ↓
+Predictions
+     ↓
+Loss
+     ↓
+Backward Pass
+     ↓
+Gradients
+     ↓
+Optimizer
+     ↓
+Updated Parameters
 
-* Python
-* PyTorch
-* NumPy
-* VS Code
-* Git
-* GitHub
+During evaluation, the model only makes predictions:
 
+Test Data
+    ↓
+CNN
+    ↓
+Predictions
+    ↓
+Compare with Labels
+    ↓
+Accuracy
+
+No parameter updates happen during evaluation.
+
+model.train()
+
+Before training:
+
+model.train()
+
+This tells PyTorch that the model is in training mode.
+
+This is particularly important for layers such as:
+
+Dropout
+Batch Normalization
+model.eval()
+
+Before evaluation:
+
+model.eval()
+
+This switches the model into evaluation mode.
+
+torch.no_grad()
+
+During evaluation, gradients are not required:
+
+with torch.no_grad():
+    outputs = model(images)
+
+This reduces unnecessary computation and memory usage.
+
+Loss Function
+
+For a CNN performing multi-class classification:
+
+loss_function = nn.CrossEntropyLoss()
+
+For example, if there are two classes:
+
+Class 0
+Class 1
+
+the model produces two output values for each image.
+
+The predicted class can be obtained using:
+
+predictions = outputs.argmax(dim=1)
+Accuracy
+
+Accuracy tells us how many predictions were correct.
+
+correct = (predictions == labels).sum().item()
+
+accuracy = correct / total
+
+For example:
+
+Correct predictions = 18
+Total images = 20
+
+Accuracy = 18 / 20
+         = 90%
+Example
+import torch
+from torch import nn
+from torch.utils.data import DataLoader, TensorDataset
+
+
+torch.manual_seed(42)
+
+
+# --------------------------------------------------
+# 1. Create sample image data
+# --------------------------------------------------
+
+X_train = torch.randn(100, 3, 64, 64)
+y_train = torch.randint(0, 2, (100,))
+
+X_test = torch.randn(20, 3, 64, 64)
+y_test = torch.randint(0, 2, (20,))
+
+
+# --------------------------------------------------
+# 2. Create datasets and dataloaders
+# --------------------------------------------------
+
+train_dataset = TensorDataset(X_train, y_train)
+test_dataset = TensorDataset(X_test, y_test)
+
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=16,
+    shuffle=True
+)
+
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=16,
+    shuffle=False
+)
+
+
+# --------------------------------------------------
+# 3. Create CNN
+# --------------------------------------------------
+
+class SimpleCNN(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 16, kernel_size=3),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+
+            nn.Conv2d(16, 32, kernel_size=3),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(32 * 14 * 14, 2)
+        )
+
+    def forward(self, x):
+
+        x = self.features(x)
+        x = self.classifier(x)
+
+        return x
+
+
+model = SimpleCNN()
+
+
+# --------------------------------------------------
+# 4. Loss function and optimizer
+# --------------------------------------------------
+
+loss_function = nn.CrossEntropyLoss()
+
+optimizer = torch.optim.Adam(
+    model.parameters(),
+    lr=0.001
+)
+
+
+# --------------------------------------------------
+# 5. Training
+# --------------------------------------------------
+
+epochs = 5
+
+for epoch in range(epochs):
+
+    model.train()
+
+    total_loss = 0
+    correct = 0
+    total = 0
+
+    for images, labels in train_loader:
+
+        # Forward pass
+        outputs = model(images)
+
+        # Calculate loss
+        loss = loss_function(outputs, labels)
+
+        # Clear previous gradients
+        optimizer.zero_grad()
+
+        # Backward pass
+        loss.backward()
+
+        # Update parameters
+        optimizer.step()
+
+        # Track loss
+        total_loss += loss.item()
+
+        # Get predicted classes
+        predictions = outputs.argmax(dim=1)
+
+        correct += (predictions == labels).sum().item()
+        total += labels.size(0)
+
+    train_loss = total_loss / len(train_loader)
+    train_accuracy = correct / total
+
+    print(
+        f"Epoch {epoch + 1}/{epochs} | "
+        f"Loss: {train_loss:.4f} | "
+        f"Accuracy: {train_accuracy:.2%}"
+    )
+
+
+# --------------------------------------------------
+# 6. Evaluation
+# --------------------------------------------------
+
+model.eval()
+
+correct = 0
+total = 0
+
+with torch.no_grad():
+
+    for images, labels in test_loader:
+
+        outputs = model(images)
+
+        predictions = outputs.argmax(dim=1)
+
+        correct += (predictions == labels).sum().item()
+        total += labels.size(0)
+
+
+test_accuracy = correct / total
+
+print("\nTest Accuracy:", f"{test_accuracy:.2%}")
+Complete Training Flow
+Image Dataset
+      ↓
+Dataset
+      ↓
+DataLoader
+      ↓
+CNN
+      ↓
+Predictions
+      ↓
+CrossEntropyLoss
+      ↓
+optimizer.zero_grad()
+      ↓
+loss.backward()
+      ↓
+optimizer.step()
+      ↓
+Updated CNN
+      ↓
+Evaluation
+      ↓
+Accuracy
+What I Learned
+
+A CNN needs both training and evaluation phases.
+
+During training, the model performs a forward pass, calculates the loss, computes gradients using backpropagation, and updates its parameters using an optimizer.
+
+During evaluation, the model switches to evaluation mode using model.eval() and predictions are made inside torch.no_grad() because the model does not need to calculate gradients.
+
+I also learned how to calculate classification accuracy by comparing the predicted classes with the actual labels.
+
+Updated Learning Progress
+12/15 Lessons Completed — 3 Lessons Remaining
+ Lesson 1 — Tensors
+ Lesson 2 — Autograd
+ Lesson 3 — Neural Network Basics
+ Lesson 4 — Activation Functions
+ Lesson 5 — Loss Functions
+ Lesson 6 — Training a Neural Network
+ Lesson 7 — Optimizers
+ Lesson 8 — Dataset and DataLoader
+ Lesson 9 — Building Neural Networks with nn.Module
+ Lesson 10 — Classification with PyTorch
+ Lesson 11 — CNNs and Image Data
+ Lesson 12 — CNN Training and Evaluation
+ Lesson 13 — Transfer Learning
+ Lesson 14 — Model Saving, Loading and Deployment Basics
+ Lesson 15 — PyTorch Image Classification Project
 ---
 
 ## Goal
