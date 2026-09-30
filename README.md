@@ -1,8 +1,8 @@
 # PyTorch Learning
 
-This repository contains my notes, practice code, and experiments while learning PyTorch from the basics.
+This repository contains my notes, practice code, and experiments while learning PyTorch and deep learning step by step.
 
-The focus is on understanding core concepts step by step and applying them through practical examples.
+The focus is on understanding core PyTorch concepts, implementing them through practical examples, and gradually progressing toward real-world deep learning projects.
 
 ---
 
@@ -27,11 +27,11 @@ The focus is on understanding core concepts step by step and applying them throu
 * Tensor shape
 * Tensor dimensions
 * Data types
-* Reshaping with `.reshape()`
+* `.reshape()`
 
 ### What I Learned
 
-Tensors are the basic data structure used by PyTorch. They are similar to arrays but are designed for efficient numerical computation and can also be used with GPUs.
+Tensors are the fundamental data structure used by PyTorch. They are similar to arrays but are optimized for numerical computation and can also be used for GPU-based computation.
 
 ---
 
@@ -45,6 +45,7 @@ Tensors are the basic data structure used by PyTorch. They are similar to arrays
 * Learn how `requires_grad` works.
 * Understand `.backward()`.
 * Access gradients using `.grad`.
+* Understand the computational graph.
 
 ### Key Concepts
 
@@ -55,7 +56,7 @@ Tensors are the basic data structure used by PyTorch. They are similar to arrays
 
 ### What I Learned
 
-PyTorch automatically tracks operations on tensors that require gradients. Calling `.backward()` calculates the gradients needed during model training.
+PyTorch automatically tracks operations on tensors that require gradients. Calling `.backward()` calculates the gradients required for updating model parameters during training.
 
 ---
 
@@ -106,7 +107,7 @@ A neural network consists of layers that transform input data into predictions. 
 
 ### What I Learned
 
-Activation functions introduce non-linearity into neural networks, allowing them to learn more complex patterns.
+Activation functions introduce non-linearity into neural networks, allowing models to learn more complex patterns from data.
 
 ---
 
@@ -119,6 +120,7 @@ Activation functions introduce non-linearity into neural networks, allowing them
 * Understand the purpose of a loss function.
 * Learn how predictions are compared with actual values.
 * Understand how loss is used during training.
+* Learn common loss functions.
 
 ### Key Concepts
 
@@ -130,7 +132,7 @@ Activation functions introduce non-linearity into neural networks, allowing them
 
 ### What I Learned
 
-A loss function measures how different the model's prediction is from the expected output. The model uses this information to improve its parameters.
+A loss function measures how different a model's predictions are from the expected targets. The model uses this information during training to improve its parameters.
 
 ---
 
@@ -142,7 +144,7 @@ A loss function measures how different the model's prediction is from the expect
 
 * Understand the basic training process.
 * Learn the training loop.
-* Use forward propagation.
+* Perform forward propagation.
 * Calculate loss.
 * Calculate gradients.
 * Update model parameters.
@@ -191,7 +193,7 @@ Training a neural network involves repeatedly making predictions, calculating th
 
 * Understand what an optimizer does.
 * Learn how optimizers update model parameters.
-* Understand learning rate.
+* Understand the learning rate.
 * Compare basic optimizers.
 
 ### Key Concepts
@@ -213,7 +215,7 @@ optimizer = torch.optim.Adam(
 
 ### What I Learned
 
-Optimizers use the gradients calculated during backpropagation to update the model parameters. The learning rate controls how large these updates are.
+Optimizers use gradients calculated during backpropagation to update model parameters. The learning rate controls the size of these parameter updates.
 
 ---
 
@@ -240,38 +242,11 @@ Optimizers use the gradients calculated during backpropagation to update the mod
 * `__getitem__()`
 * `batch_size`
 
-### Example
-
-```python
-from torch.utils.data import Dataset, DataLoader
-
-class MyDataset(Dataset):
-
-    def __init__(self, X, y):
-        self.X = X
-        self.y = y
-
-    def __len__(self):
-        return len(self.X)
-
-    def __getitem__(self, index):
-        return self.X[index], self.y[index]
-
-
-dataset = MyDataset(X, y)
-
-loader = DataLoader(
-    dataset,
-    batch_size=2,
-    shuffle=True
-)
-```
-
 ### What I Learned
 
-A `Dataset` stores and provides access to training data, while a `DataLoader` makes it easier to load the data in batches during training.
+A `Dataset` stores and provides access to training data, while a `DataLoader` makes it easier to load data in batches during training.
 
-Using batches is important because models usually train on groups of samples instead of processing the entire dataset at once.
+Using batches allows models to process groups of samples instead of loading the entire dataset at once.
 
 ---
 
@@ -298,45 +273,6 @@ Using batches is important because models usually train on groups of samples ins
 * Weights and biases
 * Model parameters
 
-### Example
-
-```python
-import torch
-from torch import nn
-
-
-class SimpleNeuralNetwork(nn.Module):
-
-    def __init__(self):
-        super().__init__()
-
-        self.layer1 = nn.Linear(2, 8)
-        self.layer2 = nn.Linear(8, 4)
-        self.output = nn.Linear(4, 1)
-
-    def forward(self, x):
-        x = self.layer1(x)
-        x = torch.relu(x)
-
-        x = self.layer2(x)
-        x = torch.relu(x)
-
-        x = self.output(x)
-
-        return x
-
-
-model = SimpleNeuralNetwork()
-
-x = torch.tensor([[1.0, 2.0]])
-
-prediction = model(x)
-
-print(model)
-print("Input:", x)
-print("Prediction:", prediction)
-```
-
 ### Model Architecture
 
 ```text
@@ -359,7 +295,7 @@ Output
 
 `nn.Module` is the base class used to create neural network models in PyTorch. Layers such as `nn.Linear` can be defined inside the model, while the `forward()` method defines how input data moves through the network.
 
-PyTorch automatically tracks the weights and biases of the layers as model parameters, which can later be updated by an optimizer during training.
+PyTorch automatically tracks the weights and biases of these layers as model parameters.
 
 ---
 
@@ -369,43 +305,13 @@ PyTorch automatically tracks the weights and biases of the layers as model param
 
 ### Objectives
 
-* Understand what classification means in machine learning.
+* Understand classification in machine learning.
 * Learn the difference between binary classification and regression.
 * Build a neural network for binary classification.
 * Understand class labels.
-* Learn how `BCEWithLogitsLoss()` is used for binary classification.
+* Learn how `BCEWithLogitsLoss()` is used.
 * Convert model outputs into probabilities.
 * Convert probabilities into predicted classes.
-
-### Classification
-
-Classification is a machine learning task where a model predicts a category or class.
-
-For example:
-
-```text
-Input Features
-      ↓
-Neural Network
-      ↓
-Prediction
-      ↓
-Class
-```
-
-In binary classification, there are two possible classes:
-
-```text
-0 → Class 0
-1 → Class 1
-```
-
-For example, a model could classify an input as:
-
-```text
-0 → Not detected
-1 → Detected
-```
 
 ### Key Concepts
 
@@ -419,106 +325,49 @@ For example, a model could classify an input as:
 
 ### Important Concept — Logits
 
-The final layer of the model produces a raw value called a **logit**.
+The final layer of a binary classification model produces a raw value called a **logit**.
 
-The logit is not directly a probability.
+A logit is not directly a probability.
 
-We can convert the logit into a probability using the sigmoid function:
+It can be converted into a probability using:
 
 ```python
 probability = torch.sigmoid(logit)
 ```
-
-The output is between `0` and `1`.
 
 For example:
 
 ```text
 Logit → Probability
 
-  2.0 → 0.88
-  0.0 → 0.50
- -2.0 → 0.12
+ 2.0 → 0.88
+ 0.0 → 0.50
+-2.0 → 0.12
 ```
 
-A common threshold for binary classification is `0.5`:
+A common threshold is `0.5`:
 
 ```python
 predicted_class = (probability >= 0.5).float()
 ```
 
-This means:
-
-```text
-Probability >= 0.5 → Class 1
-Probability < 0.5  → Class 0
-```
-
 ### Loss Function
 
-For binary classification, this lesson uses:
+For binary classification:
 
 ```python
 loss_function = nn.BCEWithLogitsLoss()
 ```
 
-`BCEWithLogitsLoss()` combines the sigmoid operation and binary cross-entropy loss in a numerically stable way.
+`BCEWithLogitsLoss()` combines sigmoid and binary cross-entropy in a numerically stable way.
 
-Because of this, the model should return the raw logits during training rather than applying `torch.sigmoid()` inside the model.
-
-### Model Architecture
-
-```text
-Input: 2 features
-       ↓
-Linear(2 → 8)
-       ↓
-ReLU
-       ↓
-Linear(8 → 4)
-       ↓
-ReLU
-       ↓
-Linear(4 → 1)
-       ↓
-Logit
-       ↓
-Sigmoid
-       ↓
-Probability
-       ↓
-Threshold 0.5
-       ↓
-Class 0 or 1
-```
-
-### Training Process
-
-```text
-Input Data
-    ↓
-Model
-    ↓
-Logits
-    ↓
-BCEWithLogitsLoss
-    ↓
-Backward Pass
-    ↓
-Gradients
-    ↓
-Adam Optimizer
-    ↓
-Updated Parameters
-```
+Therefore, the model should return raw logits during training.
 
 ### What I Learned
 
-Classification is used when the output represents a category instead of a continuous value.
+Classification is used when the output represents a category rather than a continuous value.
 
-In binary classification, the model produces one logit. `BCEWithLogitsLoss()` compares this logit with the target class and calculates the loss.
-
-After training, `torch.sigmoid()` can be used to convert logits into probabilities, and a threshold such as `0.5` can be used to obtain the final class prediction.
+For binary classification, the model produces one logit. After training, sigmoid can be used to convert the logit into a probability, followed by a threshold to obtain the predicted class.
 
 ---
 
@@ -528,112 +377,13 @@ After training, `torch.sigmoid()` can be used to convert logits into probabiliti
 
 ### Objectives
 
-* Understand what Convolutional Neural Networks (CNNs) are.
+* Understand Convolutional Neural Networks.
 * Learn why CNNs are useful for image data.
 * Understand convolutional layers.
 * Learn about pooling layers.
 * Understand feature maps.
 * Build a simple CNN using PyTorch.
-* Understand the basic flow of image data through a CNN.
-
-### Why CNNs?
-
-Traditional fully connected neural networks can process image data, but they become inefficient as image size increases.
-
-CNNs are designed to work with images by learning spatial patterns such as:
-
-```text
-Edges
-  ↓
-Shapes
-  ↓
-Textures
-  ↓
-More complex features
-  ↓
-Object / Class
-```
-
-CNNs are commonly used for tasks such as:
-
-* Image classification
-* Object detection
-* Medical image analysis
-* Face recognition
-* Image segmentation
-
-### Image Representation
-
-Images are represented as tensors.
-
-A color image usually has three channels:
-
-```text
-RGB
-
-Red
-Green
-Blue
-```
-
-A single image can have the shape:
-
-```text
-[Channels, Height, Width]
-```
-
-For example:
-
-```text
-[3, 64, 64]
-```
-
-When multiple images are processed together in a batch:
-
-```text
-[Batch Size, Channels, Height, Width]
-```
-
-For example:
-
-```text
-[32, 3, 64, 64]
-```
-
-This means:
-
-```text
-32    → number of images
-3     → RGB channels
-64    → image height
-64    → image width
-```
-
-### Convolution
-
-A convolutional layer uses small filters, also called kernels, to scan across an image.
-
-The filters learn useful patterns from the input image.
-
-For example:
-
-```text
-Input Image
-     ↓
-Convolution
-     ↓
-Feature Maps
-```
-
-Early layers may learn simple features such as:
-
-```text
-Edges
-Lines
-Corners
-```
-
-Deeper layers can learn more complex patterns.
+* Understand image tensor shapes.
 
 ### Key Concepts
 
@@ -643,70 +393,38 @@ Deeper layers can learn more complex patterns.
 * Feature map
 * Channels
 * `nn.Conv2d`
-* Pooling
 * `nn.MaxPool2d`
-* Flattening
 * `nn.Flatten()`
 
-### Important PyTorch Layers
+### Image Representation
 
-A convolutional layer can be created using:
-
-```python
-nn.Conv2d(
-    in_channels=3,
-    out_channels=16,
-    kernel_size=3
-)
-```
-
-Here:
+A color image usually contains three channels:
 
 ```text
-in_channels = 3
+Red
+Green
+Blue
 ```
 
-means the input image has three channels.
+A single image can have the shape:
 
 ```text
-out_channels = 16
+[3, 64, 64]
 ```
 
-means the layer learns 16 filters and produces 16 feature maps.
+For a batch of images:
 
 ```text
-kernel_size = 3
+[Batch Size, Channels, Height, Width]
 ```
 
-means the convolution uses a 3 × 3 kernel.
-
-### Pooling
-
-Pooling reduces the spatial size of feature maps.
-
-A commonly used pooling layer is:
-
-```python
-nn.MaxPool2d(kernel_size=2)
-```
-
-It reduces the height and width of the feature map while keeping important information.
-
-For example:
+Example:
 
 ```text
-Before:
-
-32 × 32
-
-      ↓ MaxPool2d(2)
-
-After:
-
-16 × 16
+[32, 3, 64, 64]
 ```
 
-### Simple CNN Architecture
+### CNN Architecture
 
 ```text
 Input Image
@@ -731,181 +449,51 @@ Linear
 Output
 ```
 
-### Example
-
-```python
-import torch
-from torch import nn
-
-
-class SimpleCNN(nn.Module):
-
-    def __init__(self):
-        super().__init__()
-
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size=3),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-
-            nn.Conv2d(16, 32, kernel_size=3),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2)
-        )
-
-        self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(32 * 14 * 14, 2)
-        )
-
-    def forward(self, x):
-        x = self.features(x)
-        x = self.classifier(x)
-
-        return x
-
-
-model = SimpleCNN()
-
-x = torch.randn(1, 3, 64, 64)
-
-output = model(x)
-
-print(model)
-print("Input shape:", x.shape)
-print("Output shape:", output.shape)
-```
-
-### Understanding the Shape Changes
-
-The input is:
-
-```text
-[1, 3, 64, 64]
-```
-
-The first convolution changes the channels:
-
-```text
-[1, 16, 62, 62]
-```
-
-After max pooling:
-
-```text
-[1, 16, 31, 31]
-```
-
-The second convolution produces:
-
-```text
-[1, 32, 29, 29]
-```
-
-After the second max pooling:
-
-```text
-[1, 32, 14, 14]
-```
-
-The tensor is then flattened:
-
-```text
-32 × 14 × 14
-```
-
-which becomes:
-
-```text
-6272
-```
-
-The final linear layer produces:
-
-```text
-2 outputs
-```
-
-representing two possible classes.
-
-### CNN Training Flow
-
-```text
-Image
-  ↓
-Convolution
-  ↓
-ReLU
-  ↓
-Pooling
-  ↓
-Convolution
-  ↓
-ReLU
-  ↓
-Pooling
-  ↓
-Flatten
-  ↓
-Linear Layer
-  ↓
-Prediction
-  ↓
-Loss
-  ↓
-Backward Pass
-  ↓
-Optimizer
-```
-
 ### What I Learned
 
-CNNs are neural networks designed to process data with spatial structure, especially images.
+CNNs are designed to process data with spatial structure, especially images.
 
-Convolutional layers learn visual features from images, while pooling layers reduce the spatial dimensions of feature maps.
-
-I also learned that image tensors in PyTorch usually follow the format:
-
-```text
-[Batch Size, Channels, Height, Width]
-```
-
-Understanding tensor shapes is important when building CNN architectures because each layer expects a specific input shape.
+Convolutional layers learn visual features, while pooling layers reduce spatial dimensions and retain important information.
 
 ---
 
-Lesson 12 — CNN Training and Evaluation
+## Lesson 12 — CNN Training and Evaluation
 
-File: cnn_training.py
+**File:** `cnn_training.py`
 
-Objectives
-Learn how to train a CNN using image data.
-Understand the complete CNN training loop.
-Use CrossEntropyLoss() for multi-class classification.
-Train a model using an optimizer.
-Understand training loss and accuracy.
-Learn the difference between training and evaluation mode.
-Use model.train() and model.eval().
-Evaluate a trained CNN without calculating gradients.
-Understand how to calculate classification accuracy.
-Key Concepts
-CNN training
-Training loop
-CrossEntropyLoss()
-model.train()
-model.eval()
-torch.no_grad()
-Accuracy
-Batch training
-Forward pass
-Backward pass
-Optimizer
-Evaluation
-Training vs Evaluation
+### Objectives
 
-During training, the model learns by updating its parameters:
+* Learn how to train a CNN using image data.
+* Understand the complete CNN training loop.
+* Use `CrossEntropyLoss()` for multi-class classification.
+* Train a model using an optimizer.
+* Understand training loss and accuracy.
+* Understand training and evaluation modes.
+* Use `model.train()` and `model.eval()`.
+* Evaluate a model using `torch.no_grad()`.
+* Calculate classification accuracy.
 
+### Key Concepts
+
+* CNN training
+* Training loop
+* `CrossEntropyLoss()`
+* `model.train()`
+* `model.eval()`
+* `torch.no_grad()`
+* Accuracy
+* Batch training
+* Forward pass
+* Backward pass
+* Optimizer
+* Evaluation
+
+### Training Flow
+
+```text
 Training Data
+     ↓
+DataLoader
      ↓
 CNN
      ↓
@@ -919,10 +507,12 @@ Gradients
      ↓
 Optimizer
      ↓
-Updated Parameters
+Updated Model
+```
 
-During evaluation, the model only makes predictions:
+### Evaluation Flow
 
+```text
 Test Data
     ↓
 CNN
@@ -932,283 +522,529 @@ Predictions
 Compare with Labels
     ↓
 Accuracy
+```
 
-No parameter updates happen during evaluation.
+During evaluation, model parameters are not updated.
 
+### Training Mode
+
+```python
 model.train()
+```
 
-Before training:
+This puts the model into training mode.
 
-model.train()
+This is important for layers such as:
 
-This tells PyTorch that the model is in training mode.
+* Dropout
+* Batch Normalization
 
-This is particularly important for layers such as:
+### Evaluation Mode
 
-Dropout
-Batch Normalization
+```python
 model.eval()
+```
 
-Before evaluation:
+This switches the model to evaluation mode.
 
-model.eval()
+During evaluation:
 
-This switches the model into evaluation mode.
-
-torch.no_grad()
-
-During evaluation, gradients are not required:
-
+```python
 with torch.no_grad():
     outputs = model(images)
+```
 
-This reduces unnecessary computation and memory usage.
+Gradients are not calculated because the model is not being trained.
 
-Loss Function
+### Accuracy
 
-For a CNN performing multi-class classification:
+Accuracy can be calculated using:
 
-loss_function = nn.CrossEntropyLoss()
-
-For example, if there are two classes:
-
-Class 0
-Class 1
-
-the model produces two output values for each image.
-
-The predicted class can be obtained using:
-
+```python
 predictions = outputs.argmax(dim=1)
-Accuracy
-
-Accuracy tells us how many predictions were correct.
 
 correct = (predictions == labels).sum().item()
 
 accuracy = correct / total
+```
+
+### What I Learned
+
+A CNN requires separate training and evaluation phases.
+
+During training, the model calculates predictions, loss, gradients, and updates its parameters.
+
+During evaluation, the model makes predictions without updating its parameters.
+
+I also learned how to calculate classification accuracy by comparing predicted classes with actual labels.
+
+---
+
+# Lesson 13 — Transfer Learning
+
+**File:** `transfer_learning.py`
+
+### Objectives
+
+* Understand the concept of transfer learning.
+* Learn why pretrained models are useful.
+* Load a pretrained CNN.
+* Understand pretrained weights.
+* Freeze model parameters.
+* Replace the final classification layer.
+* Train a pretrained model on a new dataset.
+* Understand fine-tuning.
+* Learn the difference between feature extraction and fine-tuning.
+
+---
+
+## What is Transfer Learning?
+
+Transfer learning is a technique where a model trained on one large dataset is reused for a different but related task.
+
+Instead of training a CNN completely from scratch, we can start with a model that has already learned useful visual features.
+
+### Without Transfer Learning
+
+```text
+Randomly Initialized CNN
+        ↓
+Train from Scratch
+        ↓
+Requires More Training
+        ↓
+Final Model
+```
+
+### With Transfer Learning
+
+```text
+Pretrained CNN
+      ↓
+Reuse Learned Features
+      ↓
+Replace Final Layer
+      ↓
+Train on New Dataset
+      ↓
+New Classification Model
+```
+
+Pretrained CNNs can already contain useful low-level and mid-level visual features such as:
+
+```text
+Edges
+ ↓
+Textures
+ ↓
+Shapes
+ ↓
+Patterns
+```
+
+These features can often be reused for another image classification task.
+
+---
+
+## Why Use Transfer Learning?
+
+Training a deep CNN from scratch can require:
+
+* Large datasets
+* Significant computational resources
+* More training time
+* Careful model initialization
+
+Transfer learning can reduce the amount of training required when working with a smaller dataset.
+
+It is commonly used in practical computer vision applications.
+
+---
+
+## Pretrained Models in PyTorch
+
+PyTorch provides several pretrained computer vision models.
+
+Examples include:
+
+* ResNet
+* VGG
+* DenseNet
+* EfficientNet
+* MobileNet
+
+For this lesson, I use **ResNet18** as an example.
+
+```python
+from torchvision import models
+
+model = models.resnet18(weights="DEFAULT")
+```
+
+The pretrained model already contains learned parameters.
+
+---
+
+## Freezing Model Parameters
+
+If the goal is to use the pretrained model as a feature extractor, the existing parameters can be frozen:
+
+```python
+for parameter in model.parameters():
+    parameter.requires_grad = False
+```
+
+This prevents the pretrained layers from being updated during training.
+
+The model can then focus on learning the new classification layer.
+
+---
+
+## Replacing the Final Layer
+
+A pretrained ResNet18 was originally designed for a specific number of classes.
+
+For a new classification problem, the final layer can be replaced.
+
+```python
+import torch.nn as nn
+
+model.fc = nn.Linear(
+    model.fc.in_features,
+    2
+)
+```
+
+Here:
+
+```text
+model.fc.in_features
+```
+
+gets the number of input features expected by the original final layer.
+
+The new layer produces:
+
+```text
+2 outputs
+```
+
+for a two-class classification problem.
+
+---
+
+## Transfer Learning Architecture
+
+```text
+Input Image
+     ↓
+Pretrained CNN
+     ↓
+Learned Visual Features
+     ↓
+Frozen Layers
+     ↓
+New Classification Layer
+     ↓
+Class Prediction
+```
 
 For example:
 
-Correct predictions = 18
-Total images = 20
+```text
+Image
+  ↓
+ResNet18
+  ↓
+Feature Extraction
+  ↓
+Fully Connected Layer
+  ↓
+Class 0 / Class 1
+```
 
-Accuracy = 18 / 20
-         = 90%
-Example
+---
+
+## Feature Extraction vs Fine-Tuning
+
+There are two common approaches to transfer learning.
+
+### Feature Extraction
+
+The pretrained layers are frozen:
+
+```python
+for parameter in model.parameters():
+    parameter.requires_grad = False
+```
+
+Only the new classification layer is trained.
+
+```text
+Pretrained Layers → Frozen
+Classification Layer → Trainable
+```
+
+This is useful when the new dataset is relatively small or similar to the original training domain.
+
+### Fine-Tuning
+
+Instead of freezing every pretrained layer, some or all layers can be allowed to update.
+
+```text
+Pretrained Model
+      ↓
+Selected Layers
+      ↓
+Updated During Training
+      ↓
+New Task
+```
+
+Fine-tuning allows the model to adapt its learned features to the new dataset.
+
+---
+
+## Example
+
+```python
 import torch
 from torch import nn
-from torch.utils.data import DataLoader, TensorDataset
-
-
-torch.manual_seed(42)
+from torchvision import models
 
 
 # --------------------------------------------------
-# 1. Create sample image data
+# 1. Load pretrained model
 # --------------------------------------------------
 
-X_train = torch.randn(100, 3, 64, 64)
-y_train = torch.randint(0, 2, (100,))
-
-X_test = torch.randn(20, 3, 64, 64)
-y_test = torch.randint(0, 2, (20,))
+model = models.resnet18(weights="DEFAULT")
 
 
 # --------------------------------------------------
-# 2. Create datasets and dataloaders
+# 2. Freeze pretrained parameters
 # --------------------------------------------------
 
-train_dataset = TensorDataset(X_train, y_train)
-test_dataset = TensorDataset(X_test, y_test)
+for parameter in model.parameters():
+    parameter.requires_grad = False
 
-train_loader = DataLoader(
-    train_dataset,
-    batch_size=16,
-    shuffle=True
-)
 
-test_loader = DataLoader(
-    test_dataset,
-    batch_size=16,
-    shuffle=False
+# --------------------------------------------------
+# 3. Replace final classification layer
+# --------------------------------------------------
+
+model.fc = nn.Linear(
+    model.fc.in_features,
+    2
 )
 
 
 # --------------------------------------------------
-# 3. Create CNN
-# --------------------------------------------------
-
-class SimpleCNN(nn.Module):
-
-    def __init__(self):
-        super().__init__()
-
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size=3),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-
-            nn.Conv2d(16, 32, kernel_size=3),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2)
-        )
-
-        self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(32 * 14 * 14, 2)
-        )
-
-    def forward(self, x):
-
-        x = self.features(x)
-        x = self.classifier(x)
-
-        return x
-
-
-model = SimpleCNN()
-
-
-# --------------------------------------------------
-# 4. Loss function and optimizer
+# 4. Create loss function
 # --------------------------------------------------
 
 loss_function = nn.CrossEntropyLoss()
 
+
+# --------------------------------------------------
+# 5. Create optimizer
+# --------------------------------------------------
+
 optimizer = torch.optim.Adam(
-    model.parameters(),
+    model.fc.parameters(),
     lr=0.001
 )
 
 
 # --------------------------------------------------
-# 5. Training
+# 6. Example input
 # --------------------------------------------------
 
-epochs = 5
+images = torch.randn(4, 3, 224, 224)
 
-for epoch in range(epochs):
+outputs = model(images)
 
-    model.train()
+print(model)
+print("Input shape:", images.shape)
+print("Output shape:", outputs.shape)
+```
 
-    total_loss = 0
-    correct = 0
-    total = 0
+### Expected Output Shape
 
-    for images, labels in train_loader:
+The input has:
 
-        # Forward pass
-        outputs = model(images)
+```text
+[4, 3, 224, 224]
+```
 
-        # Calculate loss
-        loss = loss_function(outputs, labels)
+which means:
 
-        # Clear previous gradients
-        optimizer.zero_grad()
+```text
+4   → images in the batch
+3   → RGB channels
+224 → image height
+224 → image width
+```
 
-        # Backward pass
-        loss.backward()
+The output has:
 
-        # Update parameters
-        optimizer.step()
+```text
+[4, 2]
+```
 
-        # Track loss
-        total_loss += loss.item()
+which means:
 
-        # Get predicted classes
-        predictions = outputs.argmax(dim=1)
+```text
+4 → predictions for 4 images
+2 → two class outputs
+```
 
-        correct += (predictions == labels).sum().item()
-        total += labels.size(0)
+---
 
-    train_loss = total_loss / len(train_loader)
-    train_accuracy = correct / total
+## Transfer Learning Training Flow
 
-    print(
-        f"Epoch {epoch + 1}/{epochs} | "
-        f"Loss: {train_loss:.4f} | "
-        f"Accuracy: {train_accuracy:.2%}"
-    )
-
-
-# --------------------------------------------------
-# 6. Evaluation
-# --------------------------------------------------
-
-model.eval()
-
-correct = 0
-total = 0
-
-with torch.no_grad():
-
-    for images, labels in test_loader:
-
-        outputs = model(images)
-
-        predictions = outputs.argmax(dim=1)
-
-        correct += (predictions == labels).sum().item()
-        total += labels.size(0)
-
-
-test_accuracy = correct / total
-
-print("\nTest Accuracy:", f"{test_accuracy:.2%}")
-Complete Training Flow
+```text
 Image Dataset
-      ↓
-Dataset
       ↓
 DataLoader
       ↓
-CNN
+Pretrained ResNet18
       ↓
-Predictions
+Feature Extraction
+      ↓
+New Classification Layer
+      ↓
+Logits
       ↓
 CrossEntropyLoss
       ↓
-optimizer.zero_grad()
+Backward Pass
       ↓
-loss.backward()
+Optimizer
       ↓
-optimizer.step()
-      ↓
-Updated CNN
-      ↓
-Evaluation
-      ↓
-Accuracy
-What I Learned
+Updated Classification Layer
+```
 
-A CNN needs both training and evaluation phases.
-
-During training, the model performs a forward pass, calculates the loss, computes gradients using backpropagation, and updates its parameters using an optimizer.
-
-During evaluation, the model switches to evaluation mode using model.eval() and predictions are made inside torch.no_grad() because the model does not need to calculate gradients.
-
-I also learned how to calculate classification accuracy by comparing the predicted classes with the actual labels.
-
-Updated Learning Progress
-12/15 Lessons Completed — 3 Lessons Remaining
- Lesson 1 — Tensors
- Lesson 2 — Autograd
- Lesson 3 — Neural Network Basics
- Lesson 4 — Activation Functions
- Lesson 5 — Loss Functions
- Lesson 6 — Training a Neural Network
- Lesson 7 — Optimizers
- Lesson 8 — Dataset and DataLoader
- Lesson 9 — Building Neural Networks with nn.Module
- Lesson 10 — Classification with PyTorch
- Lesson 11 — CNNs and Image Data
- Lesson 12 — CNN Training and Evaluation
- Lesson 13 — Transfer Learning
- Lesson 14 — Model Saving, Loading and Deployment Basics
- Lesson 15 — PyTorch Image Classification Project
 ---
 
-## Goal
+## Fine-Tuning Flow
+
+```text
+Pretrained Model
+      ↓
+Load Learned Weights
+      ↓
+Replace Classification Layer
+      ↓
+Unfreeze Selected Layers
+      ↓
+Train with Small Learning Rate
+      ↓
+Adapt Model to New Dataset
+```
+
+---
+
+## Important Consideration — Input Images
+
+Pretrained image models usually expect images in a specific format.
+
+For ResNet-style models, images are commonly resized and normalized before being passed to the network.
+
+A typical preprocessing pipeline can include:
+
+```text
+Original Image
+      ↓
+Resize
+      ↓
+Convert to Tensor
+      ↓
+Normalize
+      ↓
+CNN
+```
+
+Example:
+
+```python
+from torchvision import transforms
+
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor()
+])
+```
+
+For pretrained models, normalization using the expected pretrained-model statistics is also important.
+
+---
+
+## Key Concepts
+
+* Transfer learning
+* Pretrained model
+* Pretrained weights
+* Feature extraction
+* Fine-tuning
+* Frozen parameters
+* `requires_grad`
+* ResNet
+* `torchvision.models`
+* `nn.Linear`
+* Image preprocessing
+
+---
+
+## What I Learned
+
+Transfer learning allows a pretrained neural network to be adapted to a new image classification task.
+
+Instead of learning every visual feature from the beginning, the model can reuse features learned from a large dataset.
+
+I learned how to load a pretrained ResNet model, freeze its parameters, replace its final classification layer, and prepare it for a new classification task.
+
+I also learned the difference between **feature extraction** and **fine-tuning**.
+
+Transfer learning is an important technique for practical computer vision applications because it can reduce training requirements and make it easier to build models when the available dataset is limited.
+
+---
+
+# Updated Learning Progress
+
+**13/15 Lessons Completed — 2 Lessons Remaining**
+
+* [x] Lesson 1 — Tensors
+* [x] Lesson 2 — Autograd
+* [x] Lesson 3 — Neural Network Basics
+* [x] Lesson 4 — Activation Functions
+* [x] Lesson 5 — Loss Functions
+* [x] Lesson 6 — Training a Neural Network
+* [x] Lesson 7 — Optimizers
+* [x] Lesson 8 — Dataset and DataLoader
+* [x] Lesson 9 — Building Neural Networks with `nn.Module`
+* [x] Lesson 10 — Classification with PyTorch
+* [x] Lesson 11 — CNNs and Image Data
+* [x] Lesson 12 — CNN Training and Evaluation
+* [x] Lesson 13 — Transfer Learning
+* [ ] Lesson 14 — Model Saving, Loading and Deployment Basics
+* [ ] Lesson 15 — PyTorch Image Classification Project
+
+---
+
+# Goal
 
 The goal of this repository is to build a strong understanding of PyTorch and deep learning fundamentals through consistent practice and progressively more advanced projects.
+
+The learning path is designed to progress from basic tensor operations to neural networks, CNNs, transfer learning, model deployment, and finally a complete image classification project.
+
+By the end of the learning path, the goal is to have practical experience with:
+
+* PyTorch fundamentals
+* Neural networks
+* Training and evaluation
+* CNNs
+* Image classification
+* Transfer learning
+* Model saving and loading
+* Basic deployment
+* End-to-end deep learning projects
